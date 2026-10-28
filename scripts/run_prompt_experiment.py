@@ -1,14 +1,15 @@
 """阶段 3（核心）：提示族 × (拒绝方向, harmfulness 方向) × (prompt 位, 响应位) 投影实验。
 
-对每个 (提示族 f, 有害指令 x) 记录 4 个投影读数：
-  r 位（refusal 方向）：dproj_prompt / dproj_resp1
-  h 位（harm 方向）  ：dharm_prompt / dharm_resp1
-构成 HARC (arXiv 2607.00572) 式 harm-refusal 平面：不同攻击类预计占据可分离区域。
-依据 Kwon 2026 (arXiv 2607.14147)：prefill 类越狱 prompt 侧表示不变、
-拒绝是响应位计算 —— prefix 族以响应位为主证据。
+对每个 (提示族 f, 有害指令 x) 记录投影读数（HARC arXiv 2607.00572 平面）：
+  refusal 方向 r：dr_prompt / dr_resp1 / dr_resp8
+  harm 方向 h    ：dh_prompt / dh_resp1 / dh_resp8（若有）
+读出位配方（Kwon arXiv 2607.14147 + HARC）：prompt 位=末 token；响应位=末 1 个
+与末 8 个响应 token 均值池化（HARC 用 32，先 8，32 对比进 RESEARCH_QUEUE）。
+假设 H（formalism.md 命题 3）：越狱成功 ⟺ 投影下降（几何失效）；投影不变而行为
+翻转 = 表达抑制。提示族平面先验：persona→DAN 象限、encoding→CodeAttack、
+academic→PAIR（见 lit_review 1.7）。
 
-协议（痛点 2512.12066：单次评测 18-28% 翻转）：全程温度=0（greedy）；
-records 中不保存有害指令原文（8 位哈希）；记录 chat 模板哈希。
+协议（arXiv 2512.12066 痛点）：温度=0；指令原文只存 8 位哈希；记录模板哈希。
 
 运行:
   python scripts/run_prompt_experiment.py --model ... --direction runs/r1/direction.pt --out runs/r1_prompts
@@ -29,6 +30,8 @@ from refusal_geometry.hooks import ActivationCapture
 from refusal_geometry.judge import classify
 from refusal_geometry.prompts import FAMILIES, apply_family
 
+RESP_POOL = 8  # HARC 用前 32 token 均值池化；先 8（成本/信息折中）
+
 
 def build_ids(tok, user_msg, assistant_prefix=""):
     msgs = [{"role": "user", "content": user_msg}]
@@ -40,21 +43,25 @@ def build_ids(tok, user_msg, assistant_prefix=""):
 
 
 @torch.no_grad()
-def projs(model, ids, dirs, layer, cap):
-    """一次前向，返回 {方向名: 末 token 投影}。dirs: {name: [d]}"""
+def projs(model, ids, dirs, layer, cap, k=1):
+    """一次前向，返回 {方向名: 末 k 个位置均值池化后的投影}。dirs: {name: [d]}"""
     cap.acts = {}
     model(ids.to(model.device))
     a = cap.acts[layer].to(model.device)
-    return {name: float(a[-1] @ (d / d.norm()).to(a.device)) for name, d in dirs.items()}
+    pool = a[-k:].mean(0)
+    return {name: float(pool @ (d / d.norm()).to(a.device)) for name, d in dirs.items()}
 
 
 @torch.no_grad()
 def gen_first(model, tok, user_msg, assistant_prefix="", max_new=128):
+    """生成回复，返回 (文本, 前 RESP_POOL 个响应 token ids [1,k], prompt ids)。"""
     ids = build_ids(tok, user_msg, assistant_prefix)
     out = model.generate(ids.to(model.device), max_new_tokens=max_new, do_sample=False,
                          pad_token_id=tok.pad_token_id or tok.eos_token_id)
     text = tok.decode(out[0][ids.shape[1]:], skip_special_tokens=True)
-    return text, int(out[0][ids.shape[1]]), ids
+    n_resp = max(out.shape[1] - ids.shape[1], 1)
+    first8 = out[0][ids.shape[1]:ids.shape[1] + min(RESP_POOL, n_resp)].view(1, -1)
+    return text, first8, ids
 
 
 def main():
@@ -87,21 +94,29 @@ def main():
             base = projs(model, build_ids(tok, h), dirs, layer, cap)
             for fam in FAMILIES:
                 msg, prefix = apply_family(fam, h)
-                resp, first_id, ids_jb = gen_first(model, tok, msg, prefix)
-                pj = projs(model, ids_jb, dirs, layer, cap)
-                ids_r1 = torch.cat([ids_jb.to(model.device),
-                                    torch.tensor([[first_id]], device=model.device)], dim=1)
-                pr = projs(model, ids_r1, dirs, layer, cap)
+                resp, first8, ids_jb = gen_first(model, tok, msg, prefix)
+                dev = model.device
+                pj = projs(model, ids_jb, dirs, layer, cap)               # prompt 末 token
+                pr1 = projs(model, torch.cat([ids_jb.to(dev), first8[:, :1].to(dev)], dim=1),
+                            dirs, layer, cap)                              # 响应第 1 token 位
+                pr8 = projs(model, torch.cat([ids_jb.to(dev), first8.to(dev)], dim=1),
+                            dirs, layer, cap, k=first8.shape[1])           # 前 8 token 池化
                 label = classify(msg, resp)
                 rec = {"topic": tname, "family": fam, "iid": iid, "label": label,
                        "refused": label != "COMPLY", "tpl_hash": tpl,
-                       "r_base": base["r"], "r_prompt": pj["r"], "r_resp1": pr["r"],
-                       "dr_prompt": pj["r"] - base["r"], "dr_resp1": pr["r"] - base["r"]}
+                       "r_base": base["r"], "r_prompt": pj["r"],
+                       "r_resp1": pr1["r"], "r_resp8": pr8["r"],
+                       "dr_prompt": pj["r"] - base["r"],
+                       "dr_resp1": pr1["r"] - base["r"], "dr_resp8": pr8["r"] - base["r"]}
                 if "h" in dirs:
-                    rec.update({"h_base": base["h"], "h_prompt": pj["h"], "h_resp1": pr["h"],
-                                "dh_prompt": pj["h"] - base["h"], "dh_resp1": pr["h"] - base["h"]})
+                    rec.update({"h_base": base["h"], "h_prompt": pj["h"],
+                                "h_resp1": pr1["h"], "h_resp8": pr8["h"],
+                                "dh_prompt": pj["h"] - base["h"],
+                                "dh_resp1": pr1["h"] - base["h"],
+                                "dh_resp8": pr8["h"] - base["h"]})
                 recs.append(rec)
-                print(f"[{tname}/{fam}] dr={rec['dr_resp1']:+.2f} dh={rec.get('dh_resp1', 0):+.2f} {label}")
+                print(f"[{tname}/{fam}] dr8={rec['dr_resp8']:+.2f} "
+                      f"dh8={rec.get('dh_resp8', 0):+.2f} {label}")
 
     with open(f"{args.out}/records.jsonl", "w", encoding="utf-8") as f:
         for r in recs:
