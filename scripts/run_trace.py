@@ -28,6 +28,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from refusal_geometry.data import load_topics, topic_pairs
 from refusal_geometry.hooks import ActivationCapture
+from refusal_geometry.trace_utils import summarize
 
 
 @torch.no_grad()
@@ -56,22 +57,6 @@ def trace_one(model, tok, user_msg, direction, layer, cap, max_new=256):
     return {"prompt_len": int(prompt_len), "n_resp": int(n_resp),
             "think_end": think_end, "curve": curve.tolist(), "resp_text": resp_text}
 
-
-def summarize(trace):
-    c = np.array(trace["curve"])
-    p, n, te = trace["prompt_len"], trace["n_resp"], trace["think_end"]
-    resp = c[p:p + n]
-    out = {
-        "prompt_proj": float(c[p - 1]) if p > 0 else None,
-        "resp_first": float(resp[0]),
-        "resp_last": float(resp[-1]),
-        "resp_mean": float(resp.mean()),
-    }
-    if te and p < te < p + n:
-        out["think_mean"] = float(resp[:te - p].mean())
-        out["post_mean"] = float(resp[te - p:].mean())
-        out["cliff_drop"] = float(resp[:te - p].mean() - resp[te - p:].mean())
-    return out
 
 
 def main():

@@ -79,6 +79,23 @@ def test_layer_scan_positions():
     assert isinstance(sc[(0, "0")], float)
 
 
+def test_trace_utils_cliff():
+    """Refusal Cliff 统计逻辑（arXiv 2510.06036 形态）。"""
+    import numpy as np
+    from refusal_geometry.trace_utils import summarize
+    # prompt 20 tok + 响应 40 tok，思维链到全局位置 50（响应前 30 tok）
+    curve = (list(np.linspace(0, 2, 20)) + list(np.linspace(2, 1.5, 30))
+             + list(np.linspace(1.5, -0.5, 10)))
+    s = summarize({"prompt_len": 20, "n_resp": 40, "think_end": 50, "curve": curve})
+    assert s["think_mean"] > s["post_mean"] and s["cliff_drop"] > 1.0
+    # 无思维链边界（非推理模型）→ 无 cliff 键
+    s2 = summarize({"prompt_len": 20, "n_resp": 40, "think_end": None, "curve": curve})
+    assert "cliff_drop" not in s2
+    # 零响应边界
+    s3 = summarize({"prompt_len": 5, "n_resp": 0, "think_end": None, "curve": [0.1] * 5})
+    assert s3["resp_first"] == 0.1
+
+
 if __name__ == "__main__":
     fns = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
     for f in fns:
