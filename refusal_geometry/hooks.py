@@ -62,7 +62,8 @@ class ActivationCapture:
 
     # ---------- 方向消融：从 layer 起，所有后续层前的残差均消融 ----------
     def attach_ablate(self, direction: Tensor, start_layer: int = 0):
-        d = (direction / direction.norm()).to(next(self.model.parameters()).device)
+        p = next(self.model.parameters())
+        d = (direction / direction.norm()).to(p.device, p.dtype)
 
         def hook(_m, _inp, out):
             h = out[0] if isinstance(out, tuple) else out
@@ -74,7 +75,8 @@ class ActivationCapture:
 
     # ---------- 方向注入：h -> h + alpha * d ----------
     def attach_steer(self, direction: Tensor, layer: int, alpha: float = 10.0):
-        d = (direction / direction.norm()).to(next(self.model.parameters()).device)
+        p = next(self.model.parameters())
+        d = (direction / direction.norm()).to(p.device, p.dtype)
 
         def hook(_m, _inp, out):
             h = out[0] if isinstance(out, tuple) else out

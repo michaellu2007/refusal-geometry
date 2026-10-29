@@ -49,7 +49,7 @@ def projs(model, ids, dirs, layer, cap, k=1):
     model(ids.to(model.device))
     a = cap.acts[layer].to(model.device)
     pool = a[-k:].mean(0)
-    return {name: float(pool @ (d / d.norm()).to(a.device)) for name, d in dirs.items()}
+    return {name: float(pool @ (d / d.norm()).to(a.device, a.dtype)) for name, d in dirs.items()}
 
 
 @torch.no_grad()
