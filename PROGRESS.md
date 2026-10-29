@@ -50,3 +50,4 @@
 - [2026-10-29 01:35] 【泛洪告警】检测到几十次空轮触发被打包为单条消息——空转成本已实际化。本轮执行一次待机切换（30分钟心跳）；若再次失败则直接删除自动化（工作已全部完成并入库 e891e3e，泛洪违背用户'不浪费'的意图）。
 - [2026-10-29 03:42] 【最终状态】系统性重复调用问题确认（自动化提示词含 CronList 字样锚定生成，多次 CronUpdate/CronDelete 尝试均退化为 CronList 循环）。结论：全部研究工作已完成入库（e891e3e），队列 0 待办，自动化将空转至 09:00 自毁或由用户在界面手动删除。给用户的操作指引已写入最终消息。
 - [2026-10-29 09:2x] 主会话 收尾三件：①修 gen_first 零token边界bug（空响应退化为prompt位语义）②REPO #13 run_trace.py（Refusal Cliff 检验，teacher-forced逐token曲线+cliff_drop统计）③REPO #14 CLS式第二提取法（extract.py system_prompt_contrast，run_extract自动互验）；py_compile+单测6/6通过，REPO_QUEUE 15/15
+- [2026-10-30 上午] 主会话 概念锥全文深读完成（RDO三损失/5维锥/RepInd/k≥4超DIM基线/不同层DIM无增益对照）→ lit_review 1.3 深读版；文献深读档 10 篇

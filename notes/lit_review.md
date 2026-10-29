@@ -17,11 +17,12 @@
 - 痛点：仍是英文、非推理模型；仿射项的提示词依赖性未系统研究。
 - 对我们：formalism.md 命题 2/3 的理论参照；提示词=仿射摄动的出处。
 
-### 1.3 Wollschläger et al., The Geometry of Refusal: Concept Cones (arXiv 2502.17420)【已查证 2026-10-29】
-- 贡献：梯度式表征工程方法识别拒绝方向；发现多个独立方向乃至多维概念锥中介拒绝；提出"表征独立性"（正交 ≠ 干预下独立，需同时考虑线性与非线性效应）——确认拒绝由多个不同机制驱动。
-- 实验：梯度法 vs diff-in-means 的机制识别对比（详见正文，待精读）。
-- 痛点：**无官方代码库**（arXiv 页无链接，已查证）；venue 未能确认（"ICML 2025"说法待查证，arXiv 页无标注）；未覆盖中文话题。
-- 对我们：研究问题 2 的对照假设来源；其"梯度法找方向"与我们的"成对差分"互补——若我们的余弦矩阵显示块结构，可引用其独立性框架解读；引用时写 preprint 并注明代码未公开。
+### 1.3 ⭐ Wollschläger et al., The Geometry of Refusal: Concept Cones (arXiv 2502.17420)【已全文深读 2026-10-30】
+- 贡献：RDO（Refusal Direction Optimization）——梯度优化拒绝方向，三损失（消融/加法/保留 KL），比 DIM 副作用小约 40%（TruthfulQA）；发现**最高 5 维的"概念锥"**——锥内所有方向都中介拒绝；提出表征独立性 RepInd（正交≠干预下独立，需逐层追踪余弦）。
+- 深读要点：①锥维度随模型规模增大（Qwen 1.5B→14B，残差维 1536→5120）；②ASR 随锥维度上升，Gemma-2-2B 约 4 维饱和；③**逐个消融 top-k RepInd 方向，k≥4 时超过 DIM 单方向基线；而消融不同层提取的多个 DIM 方向无增益**——证明 RepInd 方向各自捕捉独立机制；④GCG 后缀削弱 RepInd-1 表示 → 36% 越狱率 ≈ 直接消融——方向可被输入端访问。
+- 实验：Qwen2.5 1.5B-14B / Gemma2 2B/9B / Llama-3 8B；SALADBench+Alpaca 训练；JailbreakBench/StrongREJECT/SORRY-Bench/XSTest 评测；NNsight 库。
+- 痛点：无官方代码；英文话题；锥结构未按话题类别分解。
+- 对我们（更新）：①我们余弦矩阵的解读框架——话题间高余弦=同锥内部（同一机制），低余弦=独立机制（RepInd 式）；②DIM 的副作用问题（TruthfulQA）提示我们消融验证里的残存拒绝率可能混入副作用，解读时注意；③RDO 三损失可作为我们"优化版方向提取"的未来工作；④harm+refusal 双方向=锥的一个 2D 切面，与 HARC 平面自然衔接。
 
 ### 1.4 ⭐ WRDO 2026 (arXiv 2610.29555), Weighted Refusal Direction Optimization【已全文深读 2026-10-29】
 - 贡献：逐提示方向异质——单一平均方向混淆不同危害现象；从逐提示"方向银行"用学习权重（CMA-ES/GRPO-IS）聚合复合方向；同一机制反向可修复 abliterated 模型。
