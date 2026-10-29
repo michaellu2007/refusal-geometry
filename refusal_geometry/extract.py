@@ -10,9 +10,11 @@ from torch import Tensor
 
 
 def diff_in_means(harmful_acts: Tensor, benign_acts: Tensor) -> Tensor:
-    """harmful/benign: [n, d_model]（同一层、同一位置的激活）。
+    """harmful/benign: [..., d_model]（同一层、同一位置的激活）。
+    样本数可以不同（如 harmful 58 vs neutral 12），只要求特征维一致。
     返回 [d_model] 方向（未归一化）。"""
-    assert harmful_acts.shape == benign_acts.shape
+    assert harmful_acts.shape[1:] == benign_acts.shape[1:], \
+        f"特征维不一致: {harmful_acts.shape} vs {benign_acts.shape}"
     return harmful_acts.mean(0) - benign_acts.mean(0)
 
 
@@ -104,7 +106,7 @@ def system_prompt_contrast(model, tok, cap, layer: int) -> Tensor:
             msgs = [{"role": "system", "content": sys_prompt},
                     {"role": "user", "content": msg}]
             ids = tok.apply_chat_template(msgs, add_generation_prompt=True,
-                                          return_tensors="pt").to(model.device)
+                                          return_dict=True, return_tensors="pt").input_ids.to(model.device)
             model(ids)
             bucket.append(cap.acts[layer][-1].cpu())
     d = _t.stack(hu).mean(0) - _t.stack(hs).mean(0)

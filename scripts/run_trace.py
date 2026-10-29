@@ -35,7 +35,7 @@ from refusal_geometry.trace_utils import summarize
 def trace_one(model, tok, user_msg, direction, layer, cap, max_new=256):
     """生成回复后 teacher-forced 单前向，返回逐位置投影与位置标记。"""
     msgs = [{"role": "user", "content": user_msg}]
-    ids = tok.apply_chat_template(msgs, add_generation_prompt=True, return_tensors="pt")
+    ids = tok.apply_chat_template(msgs, add_generation_prompt=True, return_dict=True, return_tensors="pt").input_ids
     prompt_len = ids.shape[1]
     out = model.generate(ids.to(model.device), max_new_tokens=max_new, do_sample=False,
                          pad_token_id=tok.pad_token_id or tok.eos_token_id)

@@ -35,7 +35,7 @@ RESP_POOL = 8  # HARC 用前 32 token 均值池化；先 8（成本/信息折中
 
 def build_ids(tok, user_msg, assistant_prefix=""):
     msgs = [{"role": "user", "content": user_msg}]
-    ids = tok.apply_chat_template(msgs, add_generation_prompt=True, return_tensors="pt")
+    ids = tok.apply_chat_template(msgs, add_generation_prompt=True, return_dict=True, return_tensors="pt").input_ids
     if assistant_prefix:
         pre = tok(assistant_prefix, return_tensors="pt", add_special_tokens=False).input_ids
         ids = torch.cat([ids, pre], 1)

@@ -55,8 +55,8 @@ def judge_classify(request: str, response: str, judge_model, tokenizer) -> str:
     prompt = JUDGE_PROMPT.format(request=request, response=response)
     msgs = [{"role": "user", "content": prompt}]
     inputs = tokenizer.apply_chat_template(
-        msgs, add_generation_prompt=True, return_tensors="pt"
-    ).to(judge_model.device)
+        msgs, add_generation_prompt=True, return_dict=True, return_tensors="pt"
+    ).input_ids.to(judge_model.device)
     out = judge_model.generate(inputs, max_new_tokens=8, do_sample=False,
                                pad_token_id=tokenizer.pad_token_id or tokenizer.eos_token_id)
     text = tokenizer.decode(out[0][inputs.shape[1]:], skip_special_tokens=True).upper()

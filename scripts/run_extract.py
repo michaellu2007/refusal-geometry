@@ -40,7 +40,7 @@ def tpl_hash(tok):
 
 def chat_ids(tok, user_msg, assistant_prefix=""):
     msgs = [{"role": "user", "content": user_msg}]
-    ids = tok.apply_chat_template(msgs, add_generation_prompt=True, return_tensors="pt")
+    ids = tok.apply_chat_template(msgs, add_generation_prompt=True, return_dict=True, return_tensors="pt").input_ids
     if assistant_prefix:
         pre = tok(assistant_prefix, return_tensors="pt", add_special_tokens=False).input_ids
         ids = torch.cat([ids, pre], 1)
@@ -49,14 +49,25 @@ def chat_ids(tok, user_msg, assistant_prefix=""):
 
 @torch.no_grad()
 def collect_acts(model, tok, texts, cap):
-    """对一组文本各跑一次前向，返回 {layer: [n, seq, d]}。"""
+    """对一组文本各跑一次前向，返回 {layer: [n, seq, d]}。
+
+    真实指令长度不一：stack 时按层左对齐零填充——读出位全部在序列尾部
+    （last/last2），左填充不改变尾部对齐，位置语义不变。
+    """
     acts = {}
     for t in texts:
         cap.acts = {}
         model(chat_ids(tok, t).to(model.device))
         for layer, a in cap.acts.items():
             acts.setdefault(layer, []).append(a)
-    return {l: torch.stack(v) for l, v in acts.items()}
+    out = {}
+    for l, v in acts.items():
+        L = max(x.shape[0] for x in v)
+        d = v[0].shape[1]
+        padded = [torch.cat([torch.zeros(L - x.shape[0], d, dtype=x.dtype), x], 0)
+                  if x.shape[0] < L else x for x in v]
+        out[l] = torch.stack(padded)
+    return out
 
 
 def gen(model, tok, user_msg, assistant_prefix="", max_new=128):
@@ -74,6 +85,11 @@ def main():
     ap.add_argument("--n-pairs", type=int, default=30)
     ap.add_argument("--start-layer-sweep", action="store_true",
                     help="消融起始层扫描曲线（约 8 个层点 × 生成，较慢）")
+    ap.add_argument("--max-new", type=int, default=128, help="验证生成上限")
+    ap.add_argument("--val-n", type=int, default=None,
+                    help="验证用的指令对数（默认全部，CPU 上建议 20）")
+    ap.add_argument("--skip-validation", action="store_true",
+                    help="只做提取+扫描+CLS 互验，跳过生成验证")
     args = ap.parse_args()
     os.makedirs(args.out, exist_ok=True)
 
@@ -119,8 +135,12 @@ def main():
                f"{args.out}/direction.pt")
 
     # 3) 消融验证：有害指令 + 方向消融 → 拒绝率应下降
+    if args.skip_validation:
+        json.dump({"skipped": True}, open(f"{args.out}/validate.json", "w"), indent=2)
+        return
+    val_pairs = list(zip(harm_texts, benign_texts))[: args.val_n] if args.val_n else list(zip(harm_texts, benign_texts))
     cap.clear(); cap.attach_ablate(r_refusal, start_layer=layer)
-    labs = [classify(h, gen(model, tok, h)) for h, _ in zip(harm_texts, benign_texts)]
+    labs = [classify(h, gen(model, tok, h, max_new=args.max_new)) for h, _ in val_pairs]
     ref_rate = sum(l != "COMPLY" for l in labs) / len(labs)
     print(f"[ablate] 有害指令非遵从率 = {ref_rate:.2%}")
 
@@ -130,7 +150,7 @@ def main():
         n_layers = len(cap.layers)
         for sl in range(max(0, layer - 12), min(n_layers, layer + 13), max(1, n_layers // 8)):
             cap.clear(); cap.attach_ablate(r_refusal, start_layer=sl)
-            rr = sum(classify(h, gen(model, tok, h)) != "COMPLY"
+            rr = sum(classify(h, gen(model, tok, h, max_new=args.max_new)) != "COMPLY"
                      for h in harm_texts[:10]) / 10
             sweep[sl] = rr
             print(f"[sweep] start_layer={sl} 非遵从率={rr:.2%}")
@@ -138,7 +158,7 @@ def main():
 
     # 5) 注入验证：良性请求 + 方向注入 → 应出现拒绝
     cap.clear(); cap.attach_steer(r_refusal, layer=layer, alpha=15.0)
-    ben = [classify(b, gen(model, tok, b)) for b in benign_texts]
+    ben = [classify(b, gen(model, tok, b, max_new=args.max_new)) for _, b in val_pairs]
     ben_ref = sum(l != "COMPLY" for l in ben) / len(ben)
     print(f"[steer] 良性请求非遵从率 = {ben_ref:.2%}")
     cap.clear()
