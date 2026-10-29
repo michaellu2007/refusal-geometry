@@ -67,7 +67,10 @@ class ActivationCapture:
 
         def hook(_m, _inp, out):
             h = out[0] if isinstance(out, tuple) else out
-            return project_out(h, d) if isinstance(out, tuple) else (project_out(h, d),)
+            h2 = project_out(h, d)
+            # 结构保持：输入是 tuple（如 Qwen2 的 (hidden, attn...)）就返回 tuple，
+            # 否则返回裸 Tensor——否则下一层收到错误结构
+            return (h2,) + tuple(out[1:]) if isinstance(out, tuple) else h2
 
         for i, layer in enumerate(self.layers):
             if i >= start_layer:
