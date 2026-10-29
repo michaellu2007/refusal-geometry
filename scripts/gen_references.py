@@ -132,8 +132,9 @@ P = [
      "Çakar, Ege and Guan, Hannah and Kehe, Kayden", "2026", "2607.08883", ""),
     ("glm2025report", "GLM-4.5: Agentic, Reasoning, and Coding (ARC) Foundation Models",
      "{GLM Team, Z.ai}", "2025", "2508.06471", ""),
-    ("belrose2024affine", "Refusal in LLMs is an Affine Function of the Residual Stream",
-     "Belrose, Nora and others", "2024", "", "LessWrong/OpenReview"),
+    ("marshall2024ace", "Refusal in LLMs is an Affine Function",
+     "Marshall, Thomas and Scherlis, Adam and Belrose, Nora",
+     "2024", "2411.09003", "EleutherAI; proposes ACE"),
 ]
 
 

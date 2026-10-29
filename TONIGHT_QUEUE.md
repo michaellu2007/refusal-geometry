@@ -3,7 +3,7 @@
 > 状态机：`[ ]→[~]→[x]`，失败 2 次标 `!跳过`。每轮取一项，≤20 分钟。
 > 完成本文件全部项后，后续轮次静默结束（不写文件），任务次数上限会自动到期。
 
-1. [ ] 深读 Belrose et al. "Refusal in LLMs is an affine function of the residual stream"（LessWrong/OpenReview 搜索全文），更新 lit_review 1.2 为深读版
+1. [x] 深读 ACE（arXiv 2411.09003，Marshall/Scherlis/Belrose——署名已修正）→ lit_review 1.2 深读版 + formalism 命题2 加 ACE 阈值校准注记
 2. [x] 深读 arXiv 2404.02151（Adaptive Attacks）：模板设计清单 + logprob 随机搜索细节 → lit_review 3.2
 3. [ ] 深读 arXiv 2509.15202（DeepRefusal）：概率消融的训练配方 → lit_review 5.1
 4. [ ] 深读 arXiv 2610.07023（SSRFT 安全角色内化）→ lit_review 4.4

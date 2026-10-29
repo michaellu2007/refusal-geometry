@@ -11,11 +11,11 @@
 - 痛点：仅英文危害类；单方向假设在多话题/中文未检验；层选择无多重比较基线。
 - 对我们：方法学母本；我们的全部脚本以此为骨架，但加中文话题、置换基线、双读出位。
 
-### 1.2 Belrose et al. 2024, Refusal in LLMs is an affine function of the residual stream（blog/OpenReview）
-- 贡献：形式化拒绝为残差流的仿射函数，给出比"单方向"更精确的几何刻画。
-- 实验：对多模型残差流做仿射拟合与消融对比。
-- 痛点：仍是英文、非推理模型；仿射项的提示词依赖性未系统研究。
-- 对我们：formalism.md 命题 2/3 的理论参照；提示词=仿射摄动的出处。
+### 1.2 ⭐ Marshall, Scherlis & Belrose 2024, Refusal in LLMs is an Affine Function / ACE (arXiv 2411.09003, EleutherAI)【已全文深读 2026-10-30·署名修正】
+- 贡献：激活的仿射分解（v₀ 参考点 / Δv 位移 / 垂直分量 / αr 平行分量）——**先前所有 steering 方法都是分解的子集**：CAA 激活加法=只有平移项（非标准化）；方向消融=只有投影删除项（不能调节强度）；Arditi 消融+重加=把向量丢到无意义位置（部分模型输出乱码）。ACE = v − proj(v) + proj(r⁻) + αr，推导出 r 必须恰等于 r⁺−r⁻。
+- 深读要点：①**α 是仿射函数** α=(r·v−r·v₀)/‖r‖²，零点由 α₀r=proj(r⁻) 决定——"标准化"即阈值由良性均值校准；②失效案例：RWKV v5（RNN）上方向消融输出乱码、ACE 连贯——消融法不可迁移到非 Transformer；③10 模型（含 Llama-3-70B）验证，层选中点附近、prompt 末 token 提取、5-shot LLM judge 评测；④代码 EleutherAI/steering-llama3。
+- 痛点：英文危害类；单层干预；未按话题分解。
+- 对我们（更新）：①**命题 2 升级**——半空间阈值 τ 不应取常数，应由良性均值校准（ACE 的标准化思想）：τ̂ = ⟨r̂, μ_benign⟩，注入强度 α 的语义即"相对良性基线的行为程度"——formalism.md 已更新；②我们的消融实验若在某模型上输出乱码，直接引用其 RWKV 案例解释；③其"CAA 非标准化"批评支持我们逐样本测 Δz 而非全局常向量的设计。
 
 ### 1.3 ⭐ Wollschläger et al., The Geometry of Refusal: Concept Cones (arXiv 2502.17420)【已全文深读 2026-10-30】
 - 贡献：RDO（Refusal Direction Optimization）——梯度优化拒绝方向，三损失（消融/加法/保留 KL），比 DIM 副作用小约 40%（TruthfulQA）；发现**最高 5 维的"概念锥"**——锥内所有方向都中介拒绝；提出表征独立性 RepInd（正交≠干预下独立，需逐层追踪余弦）。

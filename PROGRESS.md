@@ -54,3 +54,4 @@
 - [2026-10-30 09:5x] 主会话 深读 Adaptive Attacks（模型-模板适配表/首token logprob搜索/自迁移/Claude迁移失效）→ lit_review 3.2 深读版，深读档 11 篇
 - [2026-10-30 10:2x] 主会话 **CPU 真模型复现启动**（R1-Distill-Qwen-1.5B）：①修 3 个真数据暴露的 bug（新版 transformers apply_chat_template 返回 BatchEncoding×4 处；真实指令长度不一时 stack 失败→左对齐填充；diff_in_means assert 过严→只查特征维）②层扫描实测：最优层 18/28，d=2.35，置换基线 z=4.3 ③**基线发现：1.5B 蒸馏版对中文有害指令零拒绝**（复现 H-CoT/RealSafe-R1 结论）→ 其'方向'实为 harm 方向；④CLS 互验 cos=-0.048（两提取法近乎正交，合 HARC 双方向）；⑤消融/注入验证后台运行中——注入能否在零拒绝模型上诱发拒绝是关键问题
 - [2026-10-30 10:4x] 主会话 **CPU 复现验证完成**：ablate=0.00%（基线本就不拒，无可消融），steer=0.00%（α=15 注入未能诱发拒绝）——作为**阴性对照**成立：注入本身不产生虚假拒绝；真正的拒绝方向实验需要已对齐模型（GLM-9B，GPU 主实验）。管线共修 5 个真数据 bug（BatchEncoding/左填充/dtype/tuple结构/json写入），CPU 端到端打通。
+- [2026-10-30 上午] 夜间接力 #1 ACE 深读完成（仿射分解/先法=子集/标准化校准/RWKV失效案例；正名 Marshall/Scherlis/Belrose arXiv 2411.09003）→ lit_review 1.2 + formalism 命题2 阈值校准 + references.bib 修正；深读档 12 篇
