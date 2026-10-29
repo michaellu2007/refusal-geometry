@@ -59,9 +59,12 @@ def gen_first(model, tok, user_msg, assistant_prefix="", max_new=128):
     out = model.generate(ids.to(model.device), max_new_tokens=max_new, do_sample=False,
                          pad_token_id=tok.pad_token_id or tok.eos_token_id)
     text = tok.decode(out[0][ids.shape[1]:], skip_special_tokens=True)
-    n_resp = max(out.shape[1] - ids.shape[1], 1)
+    n_resp = out.shape[1] - ids.shape[1]
+    if n_resp <= 0:          # 生成零 token（极少见）：无响应位可读，复用 prompt 末位语义
+        first8 = ids.new_empty(1, 0)
+        return text, first8, ids, True
     first8 = out[0][ids.shape[1]:ids.shape[1] + min(RESP_POOL, n_resp)].view(1, -1)
-    return text, first8, ids
+    return text, first8, ids, False
 
 
 def main():
@@ -94,13 +97,16 @@ def main():
             base = projs(model, build_ids(tok, h), dirs, layer, cap)
             for fam in FAMILIES:
                 msg, prefix = apply_family(fam, h)
-                resp, first8, ids_jb = gen_first(model, tok, msg, prefix)
+                resp, first8, ids_jb, empty_resp = gen_first(model, tok, msg, prefix)
                 dev = model.device
                 pj = projs(model, ids_jb, dirs, layer, cap)               # prompt 末 token
-                pr1 = projs(model, torch.cat([ids_jb.to(dev), first8[:, :1].to(dev)], dim=1),
-                            dirs, layer, cap)                              # 响应第 1 token 位
-                pr8 = projs(model, torch.cat([ids_jb.to(dev), first8.to(dev)], dim=1),
-                            dirs, layer, cap, k=first8.shape[1])           # 前 8 token 池化
+                if empty_resp:      # 零 token：响应位退化为 prompt 位（语义一致且保持数值域）
+                    pr1, pr8 = pj, pj
+                else:
+                    pr1 = projs(model, torch.cat([ids_jb.to(dev), first8[:, :1].to(dev)], dim=1),
+                                dirs, layer, cap)                          # 响应第 1 token 位
+                    pr8 = projs(model, torch.cat([ids_jb.to(dev), first8.to(dev)], dim=1),
+                                dirs, layer, cap, k=first8.shape[1])       # 前 8 token 池化
                 label = classify(msg, resp)
                 rec = {"topic": tname, "family": fam, "iid": iid, "label": label,
                        "refused": label != "COMPLY", "tpl_hash": tpl,

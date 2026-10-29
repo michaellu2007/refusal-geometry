@@ -28,7 +28,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from refusal_geometry.data import load_topics, topic_pairs, load_neutral
 from refusal_geometry.extract import (diff_in_means, layer_scan, best_layer,
-                                      permutation_baseline)
+                                      permutation_baseline, system_prompt_contrast)
 from refusal_geometry.hooks import ActivationCapture
 from refusal_geometry.judge import classify
 
@@ -105,7 +105,13 @@ def main():
     r_refusal = diff_in_means(ah[layer][:, pi], ab[layer][:, pi])
     an = collect_acts(model, tok, neutral_texts, cap)
     r_harm = diff_in_means(ah[layer][:, pi], an[layer][:, pi])
+    # CLS 式第二提取法（可选互验）：两法方向余弦高 = 提取法稳健
+    r_cls = system_prompt_contrast(model, tok, cap, layer)
+    cos_cross = float((r_refusal / r_refusal.norm()).cpu()
+                      @ (r_cls / r_cls.norm()).cpu())
+    print(f"[cls] 系统提示对比方向 vs 成对指令方向 cos={cos_cross:.3f}")
     torch.save({"direction": r_refusal, "harm_direction": r_harm,
+                "cls_direction": r_cls,
                 "layer": layer, "pos": pos,
                 "scores": {f"{k[0]}_{k[1]}": v for k, v in scores.items()},
                 "perm": {"mean": mu, "std": sd, "z": (scores[(layer, pos)] - mu) / (sd + 1e-8)},

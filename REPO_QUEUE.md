@@ -17,6 +17,6 @@
 10. [x] CLOUD.md 补"评测协议"节 → 已完成（greedy 主协议 + SSI 复核 + judge κ + 翻转率列 + 模板哈希 + 基线拒绝率门槛 6 条）
 11. [x] README.md 同步 → 已完成（**发现原 README 从未写入成功——首轮创建时被计划模式拦截，本轮补全**：目录/快速开始/协议摘要/发布纪律全为当前状态）
 12. [x] notes/formalism.md 补命题 3 证明细节 → 已完成（单步仿射性一阶论证/Δz 逐样本分布解释/ε 项三来源与 AUC 的关系/与 HARC 分类的衔接）
-13. [ ]（GPU 依赖·留待明晚容器）R1 对照组升级：run_prompt_experiment.py 加"逐 token 投影曲线"模式（思维链内逐步记录 refusal 方向投影，检验 Refusal Cliff 2510.06036 在 R1-Distill 上的存在性）
-14. [ ]（GPU 依赖·留待明晚容器）可选实验：run_extract.py 加"系统提示对比"第二提取法（CLS 式三路前向），与成对指令法提取的方向算余弦互验
+13. [x]（代码就绪 2026-10-29，GPU 验证待容器）R1 逐 token 投影曲线 → scripts/run_trace.py（teacher-forced 单前向，输出 cliff_drop 统计）
+14. [x]（代码就绪 2026-10-29，GPU 验证待容器）CLS 式第二提取法 → extract.py system_prompt_contrast()，run_extract 自动互验并保存 cls_direction 与两法余弦
 15. [x] 核实 bigmodel 渠道 → 已完成（无独立 SRC/公开邮箱；兜底三件套写入模板路线 B）
