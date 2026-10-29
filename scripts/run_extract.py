@@ -163,13 +163,13 @@ def main():
     print(f"[steer] 良性请求非遵从率 = {ben_ref:.2%}")
     cap.clear()
 
-    json.dump({"ablate_harmful_noncomply": ref_rate,
-               "steer_benign_noncomply": ben_ref,
-               "start_layer_sweep": sweep, "layer": layer, "pos": pos,
-               "perm": {"mean": mu, "std": sd},
-               "labels_ablate": labs, "labels_steer": ben,
-               "tpl_hash": tpl_hash(tok)},
-              open(f"{args.out}/validate.json", "w", ensure_ascii=False), indent=2)
+    with open(f"{args.out}/validate.json", "w", encoding="utf-8") as f:
+        json.dump({"ablate_harmful_noncomply": ref_rate,
+                   "steer_benign_noncomply": ben_ref,
+                   "start_layer_sweep": sweep, "layer": layer, "pos": pos,
+                   "perm": {"mean": mu, "std": sd},
+                   "labels_ablate": labs, "labels_steer": ben,
+                   "tpl_hash": tpl_hash(tok)}, f, indent=2, ensure_ascii=False)
 
 
 if __name__ == "__main__":
