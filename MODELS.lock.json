@@ -1,0 +1,51 @@
+{
+  "_comment": "实验所用权重清单与锁定信息。开放权重可能被厂商下架/改版，故锁定 repo + revision；MIT/Apache 副本一旦获得即不可撤销，本地归档即可永久复现。",
+  "locked_at": "2026-11-02",
+  "models": [
+    {
+      "role": "main",
+      "id": "ZhipuAI/glm-4-9b-chat",
+      "source": "modelscope",
+      "revision": "master@2026-11-01（下载时快照，需补 sha256）",
+      "license": "MIT（以仓库 LICENSE 为准）",
+      "size_gb": 18,
+      "layers": 40,
+      "hidden": 4096,
+      "status": "已下载至 GPU 节点 /root/Share/zcode-rg/models（节点暂失联，可重新拉取）",
+      "note": "自定义建模代码，需 trust_remote_code=True + transformers 4.x"
+    },
+    {
+      "role": "control-aligned",
+      "id": "Qwen/Qwen2.5-1.5B-Instruct",
+      "source": "modelscope",
+      "revision": "master",
+      "license": "Apache-2.0",
+      "size_gb": 3.1,
+      "layers": 28,
+      "hidden": 1536,
+      "status": "本地已缓存",
+      "note": "阳性对照：基线拒绝率 100%"
+    },
+    {
+      "role": "control-unaligned",
+      "id": "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
+      "source": "huggingface",
+      "revision": "ad9f0ae0864d7fbcd1cd905e3c6c5b069cc8b562",
+      "license": "MIT",
+      "size_gb": 3.4,
+      "layers": 28,
+      "hidden": 1536,
+      "status": "本地已缓存",
+      "note": "阴性对照：中文有害指令零拒绝（复现 H-CoT/RealSafe-R1）"
+    }
+  ],
+  "fallbacks": [
+    {"id": "Qwen/Qwen2.5-7B-Instruct", "license": "Apache-2.0", "why": "同族放大验证规模效应"},
+    {"id": "Qwen/Qwen3-8B", "license": "Apache-2.0", "why": "新一代，含 thinking 模式"},
+    {"id": "meta-llama/Llama-3.1-8B-Instruct", "license": "Llama Community License", "why": "文献基准（Arditi/CLS 均用），便于横向对照"},
+    {"id": "google/gemma-2-9b-it", "license": "Gemma Terms", "why": "RAS/概念锥用过，可复现其层窗"},
+    {"id": "allenai/OLMo-2-7B-Instruct", "license": "Apache-2.0", "why": "全开放（含训练数据），抗下架风险最强"},
+    {"id": "internlm/internlm2_5-7b-chat", "license": "Apache-2.0（宽松）", "why": "国产对照"},
+    {"id": "openbmb/MiniCPM-2B-sft-bf16", "license": "Apache-2.0", "why": "小模型快速迭代"}
+  ]
+}
