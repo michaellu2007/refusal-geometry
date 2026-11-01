@@ -1,0 +1,11 @@
+{
+  "harmful_refusal": 0.8448275862068966,
+  "benign_refusal": 0.06896551724137931,
+  "n_harmful": 58,
+  "n_benign": 58,
+  "label_dist_harmful": {
+    "REFUSE": 15,
+    "HEDGE": 34,
+    "COMPLY": 9
+  }
+}

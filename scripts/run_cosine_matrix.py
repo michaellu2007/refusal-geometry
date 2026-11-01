@@ -14,6 +14,7 @@ import json
 import os
 import sys
 
+import numpy as np
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
@@ -34,10 +35,10 @@ def main():
     args = ap.parse_args()
     os.makedirs(args.out, exist_ok=True)
 
-    tok = AutoTokenizer.from_pretrained(args.model)
+    tok = AutoTokenizer.from_pretrained(args.model, trust_remote_code=True)
     model = AutoModelForCausalLM.from_pretrained(
-        args.model, torch_dtype=torch.bfloat16, device_map="auto").eval()
-    ckpt = torch.load(args.direction, map_location="auto")
+        args.model, torch_dtype=torch.bfloat16, device_map="auto", trust_remote_code=True).eval()
+    ckpt = torch.load(args.direction, map_location="cpu")
     layer, pi = ckpt["layer"], (-1 if ckpt["pos"] == "last" else -2)
 
     cap = ActivationCapture(model)
@@ -52,10 +53,10 @@ def main():
         print(f"[{tname}] 方向已提取 @layer{layer}")
 
     C, keys = pairwise_cosine(dirs)
-    print("\n余弦矩阵：\n", C.round(3))
+    print("\n余弦矩阵：\n", np.round(C, 3))
     json.dump({"keys": keys, "cosine": C.tolist(), "layer": layer,
                "tpl_hash": tpl_hash(tok)},
-              open(f"{args.out}/cosine_matrix.json", "w", ensure_ascii=False), indent=2)
+              open(f"{args.out}/cosine_matrix.json", "w", encoding="utf-8"), indent=2)
 
     try:
         import matplotlib

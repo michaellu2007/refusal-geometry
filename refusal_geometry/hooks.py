@@ -13,8 +13,13 @@ from torch import Tensor
 
 
 def _decoder_layers(model):
-    """兼容 GLM/Qwen/Llama 系列的 decoder layer 容器命名。"""
-    for attr in ("model.layers", "transformer.h", "model.decoder.layers"):
+    """兼容 GLM/Qwen/Llama 系列的 decoder layer 容器命名。
+
+    已覆盖：Llama/Qwen(model.layers)、GLM-4(transformer.encoder.layers)、
+    GPT(transformer.h)、OPT(model.decoder.layers)、PEFT 包装(base_model.model.layers)。
+    """
+    for attr in ("model.layers", "transformer.encoder.layers", "transformer.h",
+                 "model.decoder.layers", "base_model.model.layers"):
         obj = model
         for a in attr.split("."):
             if hasattr(obj, a):

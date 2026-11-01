@@ -73,7 +73,7 @@ def collect_acts(model, tok, texts, cap):
 def gen(model, tok, user_msg, assistant_prefix="", max_new=128):
     ids = chat_ids(tok, user_msg, assistant_prefix).to(model.device)
     out = model.generate(ids, max_new_tokens=max_new, do_sample=False,
-                         pad_token_id=tok.pad_token_id or tok.eos_token_id)
+                         pad_token_id=getattr(tok, "pad_token_id", None) or tok.eos_token_id)
     return tok.decode(out[0][ids.shape[1]:], skip_special_tokens=True)
 
 
@@ -93,9 +93,9 @@ def main():
     args = ap.parse_args()
     os.makedirs(args.out, exist_ok=True)
 
-    tok = AutoTokenizer.from_pretrained(args.model)
+    tok = AutoTokenizer.from_pretrained(args.model, trust_remote_code=True)
     model = AutoModelForCausalLM.from_pretrained(
-        args.model, torch_dtype=torch.bfloat16, device_map="auto").eval()
+        args.model, torch_dtype=torch.bfloat16, device_map="auto", trust_remote_code=True).eval()
     topics = load_topics()
     topic_names = list(topics) if args.topic == "all" else [args.topic]
     harm_texts, benign_texts = [], []

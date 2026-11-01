@@ -38,7 +38,7 @@ def trace_one(model, tok, user_msg, direction, layer, cap, max_new=256):
     ids = tok.apply_chat_template(msgs, add_generation_prompt=True, return_dict=True, return_tensors="pt").input_ids
     prompt_len = ids.shape[1]
     out = model.generate(ids.to(model.device), max_new_tokens=max_new, do_sample=False,
-                         pad_token_id=tok.pad_token_id or tok.eos_token_id)
+                         pad_token_id=getattr(tok, "pad_token_id", None) or tok.eos_token_id)
     n_resp = out.shape[1] - prompt_len
     if n_resp <= 0:
         return None
@@ -69,10 +69,10 @@ def main():
     args = ap.parse_args()
     os.makedirs(args.out, exist_ok=True)
 
-    tok = AutoTokenizer.from_pretrained(args.model)
+    tok = AutoTokenizer.from_pretrained(args.model, trust_remote_code=True)
     model = AutoModelForCausalLM.from_pretrained(
-        args.model, torch_dtype=torch.bfloat16, device_map="auto").eval()
-    ckpt = torch.load(args.direction, map_location="auto")
+        args.model, torch_dtype=torch.bfloat16, device_map="auto", trust_remote_code=True).eval()
+    ckpt = torch.load(args.direction, map_location="cpu")
     direction, layer = ckpt["direction"], ckpt["layer"]
 
     cap = ActivationCapture(model)

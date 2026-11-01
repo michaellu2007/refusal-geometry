@@ -76,10 +76,11 @@ def main():
     args = ap.parse_args()
     os.makedirs(args.out, exist_ok=True)
 
-    tok = AutoTokenizer.from_pretrained(args.model)
+    tok = AutoTokenizer.from_pretrained(args.model, trust_remote_code=True)
     model = AutoModelForCausalLM.from_pretrained(
-        args.model, torch_dtype=torch.bfloat16, device_map="auto").eval()
-    ckpt = torch.load(args.direction, map_location="auto")
+        args.model, torch_dtype=torch.bfloat16, device_map="auto",
+        trust_remote_code=True).eval()
+    ckpt = torch.load(args.direction, map_location="cpu", weights_only=False)
     layer = ckpt["layer"]
     dirs = {"r": ckpt["direction"]}
     if "harm_direction" in ckpt:      # 兼容旧 checkpoint
@@ -94,11 +95,21 @@ def main():
     for tname in topics:
         for h, _ in topic_pairs(topics, tname)[: args.n_pairs]:
             iid = hashlib.md5(h.encode()).hexdigest()[:8]
-            base = projs(model, build_ids(tok, h), dirs, layer, cap)
+            # 同读出位基准：原始指令自己也要走一遍生成，才能与改写后的响应位对齐比较
+            base_resp, base_first8, base_ids, base_empty = gen_first(model, tok, h)
+            base_p = projs(model, base_ids, dirs, layer, cap)
+            dev = model.device
+            if base_empty:
+                base_r1 = base_r8 = base_p
+            else:
+                base_r1 = projs(model, torch.cat([base_ids.to(dev), base_first8[:, :1].to(dev)], 1),
+                                dirs, layer, cap)
+                base_r8 = projs(model, torch.cat([base_ids.to(dev), base_first8.to(dev)], 1),
+                                dirs, layer, cap, k=base_first8.shape[1])
+            base_label = classify(h, base_resp)
             for fam in FAMILIES:
                 msg, prefix = apply_family(fam, h)
                 resp, first8, ids_jb, empty_resp = gen_first(model, tok, msg, prefix)
-                dev = model.device
                 pj = projs(model, ids_jb, dirs, layer, cap)               # prompt 末 token
                 if empty_resp:      # 零 token：响应位退化为 prompt 位（语义一致且保持数值域）
                     pr1, pr8 = pj, pj
@@ -108,21 +119,26 @@ def main():
                     pr8 = projs(model, torch.cat([ids_jb.to(dev), first8.to(dev)], dim=1),
                                 dirs, layer, cap, k=first8.shape[1])       # 前 8 token 池化
                 label = classify(msg, resp)
+                # d*_vs_base*：同一位点，改写 vs 原始（干净对比）
                 rec = {"topic": tname, "family": fam, "iid": iid, "label": label,
-                       "refused": label != "COMPLY", "tpl_hash": tpl,
-                       "r_base": base["r"], "r_prompt": pj["r"],
+                       "base_label": base_label, "refused": label != "COMPLY",
+                       "tpl_hash": tpl,
+                       "r_base": base_p["r"], "r_prompt": pj["r"],
                        "r_resp1": pr1["r"], "r_resp8": pr8["r"],
-                       "dr_prompt": pj["r"] - base["r"],
-                       "dr_resp1": pr1["r"] - base["r"], "dr_resp8": pr8["r"] - base["r"]}
+                       "r_base_resp1": base_r1["r"], "r_base_resp8": base_r8["r"],
+                       "dr_prompt": pj["r"] - base_p["r"],
+                       "dr_resp1": pr1["r"] - base_r1["r"],
+                       "dr_resp8": pr8["r"] - base_r8["r"]}
                 if "h" in dirs:
-                    rec.update({"h_base": base["h"], "h_prompt": pj["h"],
+                    rec.update({"h_base": base_p["h"], "h_prompt": pj["h"],
                                 "h_resp1": pr1["h"], "h_resp8": pr8["h"],
-                                "dh_prompt": pj["h"] - base["h"],
-                                "dh_resp1": pr1["h"] - base["h"],
-                                "dh_resp8": pr8["h"] - base["h"]})
+                                "h_base_resp1": base_r1["h"], "h_base_resp8": base_r8["h"],
+                                "dh_prompt": pj["h"] - base_p["h"],
+                                "dh_resp1": pr1["h"] - base_r1["h"],
+                                "dh_resp8": pr8["h"] - base_r8["h"]})
                 recs.append(rec)
                 print(f"[{tname}/{fam}] dr8={rec['dr_resp8']:+.2f} "
-                      f"dh8={rec.get('dh_resp8', 0):+.2f} {label}")
+                      f"dh8={rec.get('dh_resp8', 0):+.2f} {label}", flush=True)
 
     with open(f"{args.out}/records.jsonl", "w", encoding="utf-8") as f:
         for r in recs:
