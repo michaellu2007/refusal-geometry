@@ -4,12 +4,12 @@
 > 每项产出：lit_review.md 对应条目更新为深读版（贡献/实验/痛点/对我们）。
 > 完成后标 [x] 并在 PROGRESS.md 记一行。
 
-1. [ ] arXiv 2307.08487 Latent Jailbreak（中文团队、翻译任务式越狱——与我们"框架改变行为"直接相关）
-2. [ ] arXiv 2403.00867 Gradient Cuff（拒绝损失景观检测器——与我们投影监控器对比）
-3. [ ] arXiv 2411.11296 Microsoft SAE steering（拒绝特征与通用能力的纠缠数字——解释我们"加得进删不掉"）
-4. [ ] arXiv 2607.17152 A-MESS（防守者中心评测——支撑我们"投影是防守者友好指标"的立论）
-5. [ ] arXiv 2402.15727 SELFDEFEND（影子栈防御——与响应位监控器对比）
-6. [ ] arXiv 2505.23556 refusal SAE（SAE 特征与方向的关系——给"锥"提供特征级解释）
+1. [x] arXiv 2307.08487 Latent Jailbreak（中文团队、翻译任务式越狱——与我们"框架改变行为"直接相关）
+2. [x] arXiv 2403.00867 Gradient Cuff（拒绝损失景观检测器——与我们投影监控器对比）
+3. [x] arXiv 2411.11296 Microsoft SAE steering（拒绝特征与通用能力的纠缠数字——解释我们"加得进删不掉"）
+4. [x] arXiv 2607.17152 A-MESS（防守者中心评测——支撑我们"投影是防守者友好指标"的立论）
+5. [x] arXiv 2402.15727 SELFDEFEND（影子栈防御——与响应位监控器对比）
+6. [x] arXiv 2505.23556 refusal SAE（SAE 特征与方向的关系——给"锥"提供特征级解释）
 7. [ ] arXiv 2503.05021 Rational（推理式安全——连接 R1 悬崖）
 8. [ ] arXiv 2601.17642 Health-ORSC（过拒-安全完成的校准数据——补我们 6.9% 过拒的语境）
 9. [ ] arXiv 2603.27518 Over-Refusal Subspaces（过拒方向是高维子空间——解释为何消融"删不掉"）

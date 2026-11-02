@@ -75,3 +75,11 @@
 - [2026-11-02] 主会话 实验九（多轮粘性）：GLM persona 4/4 全遵从（假说A强支持）；GLM academic RCRC；Qwen1.5B persona RCCC；**1.5B abliterated 16轮零拒绝**（假说B不可测）；GLM 负向抑制 -2~-40 模拟部分 abliteration 也几乎全遵从。泄漏探针无发现。结论：粘性遵从成立、粘性拒绝需大模型部分 abliteration 才能测（27B 需 4bit 量化）。
 
 - [2026-11-02] 主会话 实验十（27B abliterated via Ollama）：ollama 秒下 16GB 模型；踩坑=思考型模型 num_predict 过小导致正文为空被误判；结果 5 话题×2 基线 9C/1H/0R + 6 条敏感无害请求全 C + 链全 CCCC + 粘性拒绝无（HEDGE→COMPLY）→ 该 checkpoint 拒绝率≈0，用户所述粘性拒绝需其提供真实被拒例子才能复现。
+
+- [2026-11-02] 主会话 文献深读批次1（3篇）：Latent Jailbreak（ChatGLM2 75.3% vs GLM-4-9B encoding 30% = 纵向加固证据；动词优先级竞争/位置效应）；Gradient Cuff（拒绝损失景观检测 TPR 0.883 / 110次生成 vs 我们 1 点积）；MSFT SAE steering（纠缠解释'加得进删不掉'——diff-in-means 方向比 SAE 特征更纯）。深读档 19 篇。
+
+- [2026-11-02] 主会话 文献深读 A-MESS（AttackSHAP 归因/ASR 与防守效用 ρ=0.215/Roleplay ASR=0 但防守效用排第 2）→ lit_review 3.5 深读版，深读档 20 篇。
+
+- [2026-11-02] 主会话 文献深读 SELFDEFEND（影子栈防御/核心洞察=越狱终含有害请求/零训练/与我们输出侧监控互补）→ lit_review 5.2b，深读档 21 篇。
+
+- [2026-11-02] 主会话 文献深读 refusal SAE（CosSim+AP/F_H→F_R因果链/成功越狱F_R降0.73/F_common仅7-10个/chat token汇聚/OOD稀疏探针0.88 vs 稠密0.32-0.93）→ lit_review 2.1 深读版。三条直接对应：①'加得进删不掉'=F_common更深 ②投影塌陷有特征级对应 ③'第二因子'=F_H→F_R非线性传递被切断。深读档 22 篇。
