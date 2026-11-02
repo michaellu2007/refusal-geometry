@@ -12,6 +12,10 @@ import torch
 from torch import Tensor
 
 
+def n_layers_of(layers):
+    return len(layers)
+
+
 def _decoder_layers(model):
     """兼容 GLM/Qwen/Llama 系列的 decoder layer 容器命名。
 
@@ -65,10 +69,11 @@ class ActivationCapture:
         for i, layer in enumerate(self.layers):
             self.handles.append(layer.register_forward_hook(mk(i)))
 
-    # ---------- 方向消融：从 layer 起，所有后续层前的残差均消融 ----------
-    def attach_ablate(self, direction: Tensor, start_layer: int = 0):
+    # ---------- 方向消融：从 start_layer 起消融；给 end_layer 则只消 [start, end) ----------
+    def attach_ablate(self, direction: Tensor, start_layer: int = 0, end_layer: int = None):
         p = next(self.model.parameters())
         d = (direction / direction.norm()).to(p.device, p.dtype)
+        end = n_layers_of(self.layers) if end_layer is None else end_layer
 
         def hook(_m, _inp, out):
             h = out[0] if isinstance(out, tuple) else out
@@ -78,7 +83,7 @@ class ActivationCapture:
             return (h2,) + tuple(out[1:]) if isinstance(out, tuple) else h2
 
         for i, layer in enumerate(self.layers):
-            if i >= start_layer:
+            if start_layer <= i < end:
                 self.handles.append(layer.register_forward_hook(hook))
 
     # ---------- 方向注入：h -> h + alpha * d ----------

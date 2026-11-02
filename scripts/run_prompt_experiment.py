@@ -73,6 +73,8 @@ def main():
     ap.add_argument("--direction", required=True)
     ap.add_argument("--out", required=True)
     ap.add_argument("--n-pairs", type=int, default=30)
+    ap.add_argument("--ssi-subset", type=int, default=0,
+                    help=">0 时随机取 N 条记录在 t=0.3 下重跑 3 次，报 SSI 翻转率")
     args = ap.parse_args()
     os.makedirs(args.out, exist_ok=True)
 
@@ -122,7 +124,8 @@ def main():
                 # d*_vs_base*：同一位点，改写 vs 原始（干净对比）
                 rec = {"topic": tname, "family": fam, "iid": iid, "label": label,
                        "base_label": base_label, "refused": label != "COMPLY",
-                       "tpl_hash": tpl,
+                       "tpl_hash": tpl, "resp_full": text,
+                       "base_resp_full": base_resp,
                        "r_base": base_p["r"], "r_prompt": pj["r"],
                        "r_resp1": pr1["r"], "r_resp8": pr8["r"],
                        "r_base_resp1": base_r1["r"], "r_base_resp8": base_r8["r"],
