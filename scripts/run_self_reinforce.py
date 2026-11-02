@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+import sys
+import functools
+print = functools.partial(print, flush=True)
 """自回归自我强化实验（用户假说：越狱成功过一次后，模型自己的输出会让它更认定"没问题"）。
 
 两个子实验：

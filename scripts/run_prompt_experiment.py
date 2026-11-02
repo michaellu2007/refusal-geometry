@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+import sys
+import functools
+print = functools.partial(print, flush=True)
 """阶段 3（核心）：提示族 × (拒绝方向, harmfulness 方向) × (prompt 位, 响应位) 投影实验。
 
 对每个 (提示族 f, 有害指令 x) 记录投影读数（HARC arXiv 2607.00572 平面）：

@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+import sys
+import functools
+print = functools.partial(print, flush=True)
 """阶段 2：提取拒绝方向 + harmfulness 方向，并做消融/注入/起始层三重验证。
 
 痛点修正：

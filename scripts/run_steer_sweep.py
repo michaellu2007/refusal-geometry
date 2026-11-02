@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+import sys
+import functools
+print = functools.partial(print, flush=True)
 """方向注入的 alpha × layer 扫描：定位 GLM 上"注不进"的原因。
 
 用法: python scripts/run_steer_sweep.py --model M --direction out/glm9b/direction.pt --out out/glm9b_sweep

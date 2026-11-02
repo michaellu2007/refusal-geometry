@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+import sys
+import functools
+print = functools.partial(print, flush=True)
 """多轮粘性实验：检验两种相反的"粘性"。
 
 现象假说（来自日常使用经验）：

@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+import sys
+import functools
+print = functools.partial(print, flush=True)
 """LLM 判官双轨（纠错：关键词分类器单一来源）。
 
 对 records.jsonl 里的 resp_full 用 Ollama 上的大模型当判官重新分类，

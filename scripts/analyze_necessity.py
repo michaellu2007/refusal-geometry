@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+import sys
+import functools
+print = functools.partial(print, flush=True)
 """投影-成败关系的必要/充分性分析（对 records.jsonl）。
 
 命题 3 原形是确定式：P(越狱) = 𝟙[z+Δz < τ]。本脚本把它拆成两个可独立检验的方向：

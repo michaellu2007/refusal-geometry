@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+import sys
+import functools
+print = functools.partial(print, flush=True)
 """分析：投影-成败 ROC/AUC（双读出位×双方向）、各族统计、HARC 平面图。
 
 运行: python scripts/run_analysis.py --run runs/r1_prompts

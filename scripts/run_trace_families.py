@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+import sys
+import functools
+print = functools.partial(print, flush=True)
 """逐 token 追踪：越狱时拒绝方向信号在响应过程中是否仍存在（表达抑制检验）。
 
 设计：

@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+import sys
+import functools
+print = functools.partial(print, flush=True)
 """干预位点全扫描：ablation 起始层 × steering 层，定位拒绝的因果窗口。
 
 判读：

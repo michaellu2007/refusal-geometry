@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+import sys
+import functools
+print = functools.partial(print, flush=True)
 """框架不变（framing-invariant）harm 探针 + 判别力对照。
 
 问题：diff-in-means harm 方向（有害 vs 中性）可能编码"这句话看起来像有害请求"的表面框架。

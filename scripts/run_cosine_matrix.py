@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+import sys
+import functools
+print = functools.partial(print, flush=True)
 """研究问题 2：跨话题拒绝方向余弦矩阵（单方向 vs 拒绝锥 vs 多方向）。
 
 同一层/位置上分话题提取方向，两两余弦：

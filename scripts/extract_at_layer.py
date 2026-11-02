@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+import sys
+import functools
+print = functools.partial(print, flush=True)
 """在指定层提取拒绝方向（用于"因果层 vs 提取最优层"对照实验）。
 
 背景：run_extract 只保存层扫描最优层（GLM-4-9B 上是 L38/40）。

@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+import sys
+import functools
+print = functools.partial(print, flush=True)
 """单层消融（纠错：区分全局消融 vs 局部消融）。
 
 run_extract 的消融是"从层 L 起全部消融"。本脚本只在**单个层**做投影消融，

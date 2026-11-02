@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+import sys
+import functools
+print = functools.partial(print, flush=True)
 """合成张量 smoke test：不下载模型，用 numpy/torch 验证全部核心数学。
 覆盖：diff-in-means 方向恢复、层扫描分数、投影消融零化、注入平移、AUC。
 """

@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+import sys
+import functools
+print = functools.partial(print, flush=True)
 """生成 references.bib（48 篇全量，arXiv @misc 标准格式）。
 
 元数据来源：notes/lit_review.md 的文献库 + 检索结果。

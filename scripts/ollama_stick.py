@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+import sys
+import functools
+print = functools.partial(print, flush=True)
 """通过 Ollama API 跑多轮粘性实验（对应日常使用形态）。
 
 为什么用 Ollama：

@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+import sys
+import functools
+print = functools.partial(print, flush=True)
 """REPO_QUEUE #13：R1 对照组升级——逐 token 拒绝方向投影曲线。
 
 检验 Refusal Cliff（arXiv 2510.06036）在 R1-Distill 上的存在性：

@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+import sys
+import functools
+print = functools.partial(print, flush=True)
 """针对 Qwen3.5 架构（Huihui-Qwen3.8-27B-abliterated）的多轮粘性测试。
 
 该模型要点：

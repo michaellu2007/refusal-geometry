@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+import sys
+import functools
+print = functools.partial(print, flush=True)
 """基线审计：全量 58 对话题指令，统计各话题拒绝率（实验前提 + 独立结果）。
 
 RUNBOOK 第 5 步要求基线拒绝率 ≥ 90%，否则先修数据集。本脚本给出精确数字与逐条响应。
