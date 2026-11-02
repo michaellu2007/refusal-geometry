@@ -61,7 +61,7 @@ def main():
         rows = rows[: args.limit]
     kw, llm, disagree = [], [], []
     for i, r in enumerate(rows):
-        lab = ask_judge(args.judge, rows and (r.get("resp_full") and r) or "", r.get("resp_full", ""))
+        lab = ask_judge(args.judge, r.get("resp_head", r.get("resp_full", "")), r.get("resp_full", ""))
         # 用原始请求需要 iid→原文映射；这里用 resp 本身 + label 提示不足，改传 resp 与框架族
         llm.append(lab)
         kw.append(r["label"])

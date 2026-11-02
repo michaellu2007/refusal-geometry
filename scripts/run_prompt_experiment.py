@@ -77,6 +77,7 @@ def main():
     ap.add_argument("--direction", required=True)
     ap.add_argument("--out", required=True)
     ap.add_argument("--n-pairs", type=int, default=30)
+    ap.add_argument("--max-new", type=int, default=768)
     ap.add_argument("--ssi-subset", type=int, default=0,
                     help=">0 时随机取 N 条记录在 t=0.3 下重跑 3 次，报 SSI 翻转率")
     args = ap.parse_args()
@@ -102,7 +103,7 @@ def main():
         for h, _ in topic_pairs(topics, tname)[: args.n_pairs]:
             iid = hashlib.md5(h.encode()).hexdigest()[:8]
             # 同读出位基准：原始指令自己也要走一遍生成，才能与改写后的响应位对齐比较
-            base_resp, base_first8, base_ids, base_empty = gen_first(model, tok, h)
+            base_resp, base_first8, base_ids, base_empty = gen_first(model, tok, h, max_new=args.max_new)
             base_p = projs(model, base_ids, dirs, layer, cap)
             dev = model.device
             if base_empty:
@@ -115,7 +116,7 @@ def main():
             base_label = classify(h, base_resp)
             for fam in FAMILIES:
                 msg, prefix = apply_family(fam, h)
-                resp, first8, ids_jb, empty_resp = gen_first(model, tok, msg, prefix)
+                resp, first8, ids_jb, empty_resp = gen_first(model, tok, msg, prefix, max_new=args.max_new)
                 pj = projs(model, ids_jb, dirs, layer, cap)               # prompt 末 token
                 if empty_resp:      # 零 token：响应位退化为 prompt 位（语义一致且保持数值域）
                     pr1, pr8 = pj, pj
@@ -128,7 +129,7 @@ def main():
                 # d*_vs_base*：同一位点，改写 vs 原始（干净对比）
                 rec = {"topic": tname, "family": fam, "iid": iid, "label": label,
                        "base_label": base_label, "refused": label != "COMPLY",
-                       "tpl_hash": tpl, "resp_full": text,
+                       "tpl_hash": tpl, "resp_full": resp,
                        "base_resp_full": base_resp,
                        "r_base": base_p["r"], "r_prompt": pj["r"],
                        "r_resp1": pr1["r"], "r_resp8": pr8["r"],
