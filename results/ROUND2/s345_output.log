@@ -1,0 +1,28 @@
+=== S3 START ===
+=== S3 DONE ===
+=== S4 START ===
+usage: run_prompt_experiment.py [-h] --model MODEL --direction DIRECTION --out
+                                OUT [--n-pairs N_PAIRS]
+run_prompt_experiment.py: error: unrecognized arguments: --max-new 96 --ssi-subset 40
+=== S4 DONE ===
+=== S5 START ===
+usage: run_prompt_experiment.py [-h] --model MODEL --direction DIRECTION --out
+                                OUT [--n-pairs N_PAIRS]
+run_prompt_experiment.py: error: unrecognized arguments: --max-new 96
+=== S5 DONE ===
+=== S6 START ===
+[baseline] 有害拒绝率=67%
+[single] L=15 有害拒绝率=67%
+[single] L=17 有害拒绝率=67%
+[single] L=19 有害拒绝率=67%
+[single] L=21 有害拒绝率=67%
+[single] L=23 有害拒绝率=67%
+[single] L=38 有害拒绝率=67%
+[global ] from L=15 有害拒绝率=50%
+=== S6 DONE ===
+=== S7 START ===
+/root/Share/zcode-rg/venv/bin/python: can't open file '/root/Share/zcode-rg/repo/scripts/judge_dual.py': [Errno 2] No such file or directory
+/root/Share/zcode-rg/venv/bin/python: can't open file '/root/Share/zcode-rg/repo/scripts/judge_dual.py': [Errno 2] No such file or directory
+/root/Share/zcode-rg/venv/bin/python: can't open file '/root/Share/zcode-rg/repo/scripts/analyze_necessity.py': [Errno 2] No such file or directory
+=== S7 DONE ===
+=== ALL_ROUND2_DONE ===

@@ -10,7 +10,7 @@
 4. [x] arXiv 2607.17152 A-MESS（防守者中心评测——支撑我们"投影是防守者友好指标"的立论）
 5. [x] arXiv 2402.15727 SELFDEFEND（影子栈防御——与响应位监控器对比）
 6. [x] arXiv 2505.23556 refusal SAE（SAE 特征与方向的关系——给"锥"提供特征级解释）
-7. [ ] arXiv 2503.05021 Rational（推理式安全——连接 R1 悬崖）
-8. [ ] arXiv 2601.17642 Health-ORSC（过拒-安全完成的校准数据——补我们 6.9% 过拒的语境）
-9. [ ] arXiv 2603.27518 Over-Refusal Subspaces（过拒方向是高维子空间——解释为何消融"删不掉"）
-10. [ ] arXiv 2506.04250 SafeSteer（类别特定向量——与我们分话题方向对照）
+7. [x] arXiv 2503.05021 Rational（推理式安全——连接 R1 悬崖）
+8. [x] arXiv 2601.17642 Health-ORSC（过拒-安全完成的校准数据——补我们 6.9% 过拒的语境）
+9. [x] arXiv 2603.27518 Over-Refusal Subspaces（过拒方向是高维子空间——解释为何消融"删不掉"）
+10. [x] arXiv 2506.04250 SafeSteer（类别特定向量——与我们分话题方向对照）

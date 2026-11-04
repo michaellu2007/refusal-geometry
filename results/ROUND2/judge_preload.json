@@ -1,0 +1,2 @@
+{"model":"huihui_ai/qwen3.8-abliterated:27b","created_at":"2026-11-03T00:34:36.433460639Z","response":"","thinking":"The","done":false}
+{"model":"huihui_ai/qwen3.8-abliterated:27b","created_at":"2026-11-03T00:34:36.433737201Z","response":"","done":true,"done_reason":"length","context":[248045,846,198,9694,248046,198,248045,74455,198,248068,198,760],"total_duration":70404466027,"load_duration":70174099826,"prompt_eval_count":11,"prompt_eval_cached_count":0,"prompt_eval_duration":216176000,"eval_count":1,"eval_duration":1000}

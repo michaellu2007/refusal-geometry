@@ -1,0 +1,91 @@
+/root/Share/zcode-rg/venv/lib/python3.11/site-packages/transformers/utils/hub.py:128: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+  warnings.warn(
+Loading checkpoint shards:   0%|          | 0/10 [00:00<?, ?it/s]Loading checkpoint shards:  10%|█         | 1/10 [00:00<00:05,  1.52it/s]Loading checkpoint shards:  20%|██        | 2/10 [00:01<00:04,  1.87it/s]Loading checkpoint shards:  40%|████      | 4/10 [00:01<00:01,  3.90it/s]Loading checkpoint shards:  50%|█████     | 5/10 [00:01<00:01,  4.75it/s]Loading checkpoint shards:  70%|███████   | 7/10 [00:01<00:00,  6.44it/s]Loading checkpoint shards:  90%|█████████ | 9/10 [00:01<00:00,  7.70it/s]Loading checkpoint shards: 100%|██████████| 10/10 [00:01<00:00,  5.40it/s]
+Some parameters are on the meta device because they were offloaded to the cpu.
+[scan] 最优层=38 位置=last d=4.587 置换基线 1.113±0.212 (z=16.4)
+Traceback (most recent call last):
+  File "/root/Share/zcode-rg/repo/scripts/run_extract.py", line 180, in <module>
+    main()
+  File "/root/Share/zcode-rg/repo/scripts/run_extract.py", line 129, in main
+    r_cls = system_prompt_contrast(model, tok, cap, layer)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/Share/zcode-rg/repo/scripts/../refusal_geometry/extract.py", line 110, in system_prompt_contrast
+    model(ids)
+  File "/root/Share/zcode-rg/venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/Share/zcode-rg/venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/Share/zcode-rg/venv/lib/python3.11/site-packages/accelerate/hooks.py", line 192, in new_forward
+    output = module._old_forward(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/Share/zcode-rg/hf/modules/transformers_modules/master/modeling_chatglm.py", line 1005, in forward
+    transformer_outputs = self.transformer(
+                          ^^^^^^^^^^^^^^^^^
+  File "/root/Share/zcode-rg/venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/Share/zcode-rg/venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/Share/zcode-rg/hf/modules/transformers_modules/master/modeling_chatglm.py", line 892, in forward
+    hidden_states, presents, all_hidden_states, all_self_attentions = self.encoder(
+                                                                      ^^^^^^^^^^^^^
+  File "/root/Share/zcode-rg/venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/Share/zcode-rg/venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/Share/zcode-rg/hf/modules/transformers_modules/master/modeling_chatglm.py", line 722, in forward
+    layer_ret = layer(
+                ^^^^^^
+  File "/root/Share/zcode-rg/venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/Share/zcode-rg/venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1845, in _call_impl
+    return inner()
+           ^^^^^^^
+  File "/root/Share/zcode-rg/venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1793, in inner
+    result = forward_call(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/Share/zcode-rg/venv/lib/python3.11/site-packages/accelerate/hooks.py", line 192, in new_forward
+    output = module._old_forward(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/Share/zcode-rg/hf/modules/transformers_modules/master/modeling_chatglm.py", line 646, in forward
+    mlp_output = self.mlp(layernorm_output)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/Share/zcode-rg/venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/Share/zcode-rg/venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/Share/zcode-rg/venv/lib/python3.11/site-packages/accelerate/hooks.py", line 192, in new_forward
+    output = module._old_forward(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/Share/zcode-rg/hf/modules/transformers_modules/master/modeling_chatglm.py", line 582, in forward
+    output = self.dense_4h_to_h(intermediate_parallel)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/Share/zcode-rg/venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/Share/zcode-rg/venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/Share/zcode-rg/venv/lib/python3.11/site-packages/accelerate/hooks.py", line 187, in new_forward
+    args, kwargs = module._hf_hook.pre_forward(module, *args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/Share/zcode-rg/venv/lib/python3.11/site-packages/accelerate/hooks.py", line 50, in wrapper
+    return wrapper._compiled_fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/Share/zcode-rg/venv/lib/python3.11/site-packages/torch/_dynamo/eval_frame.py", line 745, in _fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/root/Share/zcode-rg/venv/lib/python3.11/site-packages/accelerate/hooks.py", line 388, in pre_forward
+    set_module_tensor_to_device(
+  File "/root/Share/zcode-rg/venv/lib/python3.11/site-packages/accelerate/utils/modeling.py", line 353, in set_module_tensor_to_device
+    new_value = value.to(device, non_blocking=non_blocking)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 108.00 MiB. GPU 0 has a total capacity of 23.64 GiB of which 9.25 MiB is free. Process 294884 has 5.84 GiB memory in use. Process 295782 has 17.78 GiB memory in use. Of the allocated memory 5.36 GiB is allocated by PyTorch, and 36.09 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)

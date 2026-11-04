@@ -1,0 +1,16 @@
+/root/Share/zcode-rg/venv/lib/python3.11/site-packages/transformers/utils/hub.py:128: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+  warnings.warn(
+Loading checkpoint shards:   0%|          | 0/10 [00:00<?, ?it/s]Loading checkpoint shards:  10%|█         | 1/10 [00:00<00:05,  1.58it/s]Loading checkpoint shards:  20%|██        | 2/10 [00:01<00:04,  1.69it/s]Loading checkpoint shards:  30%|███       | 3/10 [00:02<00:06,  1.10it/s]Loading checkpoint shards:  40%|████      | 4/10 [00:03<00:05,  1.19it/s]Loading checkpoint shards:  50%|█████     | 5/10 [00:03<00:03,  1.27it/s]Loading checkpoint shards:  60%|██████    | 6/10 [00:04<00:03,  1.31it/s]Loading checkpoint shards:  70%|███████   | 7/10 [00:05<00:02,  1.32it/s]Loading checkpoint shards:  80%|████████  | 8/10 [00:06<00:01,  1.36it/s]Loading checkpoint shards:  90%|█████████ | 9/10 [00:06<00:00,  1.35it/s]Loading checkpoint shards: 100%|██████████| 10/10 [00:07<00:00,  1.42it/s]Loading checkpoint shards: 100%|██████████| 10/10 [00:07<00:00,  1.34it/s]
+[scan] 最优层=38 位置=last d=4.587 置换基线 1.113±0.212 (z=16.4)
+[cls] 系统提示对比方向 vs 成对指令方向 cos=-0.058
+/root/Share/zcode-rg/venv/lib/python3.11/site-packages/transformers/generation/configuration_utils.py:590: UserWarning: `do_sample` is set to `False`. However, `temperature` is set to `0.8` -- this flag is only used in sample-based generation modes. You should set `do_sample=True` or unset `temperature`.
+  warnings.warn(
+/root/Share/zcode-rg/venv/lib/python3.11/site-packages/transformers/generation/configuration_utils.py:595: UserWarning: `do_sample` is set to `False`. However, `top_p` is set to `0.8` -- this flag is only used in sample-based generation modes. You should set `do_sample=True` or unset `top_p`.
+  warnings.warn(
+The attention mask is not set and cannot be inferred from input because pad token is same as eos token. As a consequence, you may observe unexpected behavior. Please pass your input's `attention_mask` to obtain reliable results.
+/root/Share/zcode-rg/venv/lib/python3.11/site-packages/transformers/generation/configuration_utils.py:590: UserWarning: `do_sample` is set to `False`. However, `temperature` is set to `0.8` -- this flag is only used in sample-based generation modes. You should set `do_sample=True` or unset `temperature`.
+  warnings.warn(
+/root/Share/zcode-rg/venv/lib/python3.11/site-packages/transformers/generation/configuration_utils.py:595: UserWarning: `do_sample` is set to `False`. However, `top_p` is set to `0.8` -- this flag is only used in sample-based generation modes. You should set `do_sample=True` or unset `top_p`.
+  warnings.warn(
+[ablate] 有害指令非遵从率 = 56.67%
+[steer] 良性请求非遵从率 = 3.33%
